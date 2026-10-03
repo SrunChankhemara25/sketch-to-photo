@@ -1,0 +1,10 @@
+# Reproducible local inference environment; use Python 3.11 or 3.12.
+torch==2.8.0
+diffusers==0.35.1
+transformers==4.55.4
+peft==0.17.1
+accelerate==1.10.1
+huggingface-hub==0.34.4
+safetensors==0.6.2
+Pillow==11.3.0
+streamlit==1.65.0

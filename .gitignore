@@ -1,0 +1,14 @@
+.venv/
+.venv-diffusion/
+__pycache__/
+*.pyc
+checkpoints/*.pt
+checkpoints/dual_diffusion/
+checkpoints/quality_study/
+.DS_Store
+.ipynb_checkpoints/
+data/
+outputs/
+logs/
+.env
+.env.*

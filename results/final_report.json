@@ -1,0 +1,128 @@
+{
+  "project": "Sketch-to-Photo Translation",
+  "timestamp": "2026-09-25T15:02:02.572022",
+  "device": "cuda",
+  "gpu_name": "Tesla T4",
+  "pytorch_version": "2.11.0+cu128",
+  "config": {
+    "stored_size": "256",
+    "train_res": "128",
+    "chunk_size": "10000",
+    "val_size": "4000",
+    "test_size": "4000",
+    "train_limit": "60000",
+    "sigma_s": "60",
+    "sigma_r": "0.07",
+    "batch_size": "32",
+    "num_workers": "2",
+    "epochs": "8",
+    "lr": "0.0003",
+    "weight_decay": "0.0001",
+    "patience": "3",
+    "coco_zip_url": "http://images.cocodataset.org/zips/train2017.zip",
+    "local_root": "/content/s2p",
+    "chunks_dir": "/content/s2p/chunks",
+    "ckpt_dir": "/content/s2p/checkpoints",
+    "results_dir": "/content/s2p/results",
+    "manifest_path": "/content/s2p/manifest.csv",
+    "split_path": "/content/s2p/split.json",
+    "state_path": "/content/s2p/results/state.json"
+  },
+  "split": {
+    "train": 60000,
+    "val": 4000,
+    "test": 4000
+  },
+  "results_table": [
+    {
+      "Model": "Model A \u2014 AutoEncoder",
+      "MSE": 0.0601019954723306,
+      "L1": 0.1877776089794934,
+      "PSNR": 12.914285435849717,
+      "SSIM": 0.28069689869880676,
+      "Params": 5544003,
+      "Minutes": 15.59110831419627
+    },
+    {
+      "Model": "Model B \u2014 U-Net",
+      "MSE": 0.05333750670053996,
+      "L1": 0.17089109226968138,
+      "PSNR": 13.590780582246472,
+      "SSIM": 0.35300686955451965,
+      "Params": 31042499,
+      "Minutes": 54.08040101925532
+    },
+    {
+      "Model": "Model C \u2014 ResNet-ED",
+      "MSE": 0.05744974136620294,
+      "L1": 0.18469399752281607,
+      "PSNR": 13.104273381182523,
+      "SSIM": 0.28464916348457336,
+      "Params": 7353443,
+      "Minutes": 21.985789144039153
+    }
+  ],
+  "hp_tuning": [
+    {
+      "lr": 0.0001,
+      "wd": 0.0,
+      "val_l1": 0.21153988349437713,
+      "minutes": 0.32997322877248125
+    },
+    {
+      "lr": 0.0001,
+      "wd": 0.0001,
+      "val_l1": 0.21310294353961945,
+      "minutes": 0.33085179328918457
+    },
+    {
+      "lr": 0.0001,
+      "wd": 0.01,
+      "val_l1": 0.2203420855998993,
+      "minutes": 0.32501215537389117
+    },
+    {
+      "lr": 0.0003,
+      "wd": 0.0,
+      "val_l1": 0.21570474660396577,
+      "minutes": 0.32442682186762495
+    },
+    {
+      "lr": 0.0003,
+      "wd": 0.0001,
+      "val_l1": 0.21530434930324555,
+      "minutes": 0.3294948776563008
+    },
+    {
+      "lr": 0.0003,
+      "wd": 0.01,
+      "val_l1": 0.2165844637155533,
+      "minutes": 0.32739711602528887
+    },
+    {
+      "lr": 0.001,
+      "wd": 0.0,
+      "val_l1": 0.21457417595386505,
+      "minutes": 0.32112112442652385
+    },
+    {
+      "lr": 0.001,
+      "wd": 0.0001,
+      "val_l1": 0.2142196809053421,
+      "minutes": 0.3225856701533
+    },
+    {
+      "lr": 0.001,
+      "wd": 0.01,
+      "val_l1": 0.21764452183246613,
+      "minutes": 0.32619602282842
+    }
+  ],
+  "best_model": "Model B \u2014 U-Net",
+  "best_hp": {
+    "lr": 0.0001,
+    "wd": 0.0,
+    "val_l1": 0.21153988349437713,
+    "minutes": 0.32997322877248125
+  }
+}
