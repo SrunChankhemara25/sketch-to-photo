@@ -18,8 +18,15 @@ class PencilUNet(nn.Module):
         self.dec = nn.ModuleList([block(width*16, width*4), block(width*8, width*2),
                                  block(width*4, width), block(width*2, width)])
         self.out = nn.Conv2d(width, 3, 1)
+        # Begin as an exact identity mapping.  Paired translation then learns only the
+        # change required by the target instead of reconstructing the subject from
+        # random features.  This materially improves structure/identity preservation
+        # in short pilots and remains useful for both translation directions.
+        nn.init.zeros_(self.out.weight)
+        nn.init.zeros_(self.out.bias)
 
     def forward(self, x):
+        source = x
         skips = []
         for layer in self.enc:
             x = layer(x); skips.append(x); x = F.avg_pool2d(x, 2)
@@ -27,4 +34,4 @@ class PencilUNet(nn.Module):
         for layer, skip in zip(self.dec, reversed(skips)):
             x = F.interpolate(x, size=skip.shape[-2:], mode='bilinear', align_corners=False)
             x = layer(torch.cat([x, skip], dim=1))
-        return self.out(x).tanh()
+        return (source + self.out(x)).clamp(-1, 1)

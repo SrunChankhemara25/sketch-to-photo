@@ -11,12 +11,16 @@ BASE_MODEL = 'timbrooks/instruct-pix2pix'
 BASE_REVISION = '31519b5cb02a7fd89b906d88731cd4d6a7bbf88d'
 PROMPTS = {
     'photo_to_pencil': (
-        'Turn this image into a detailed hand-drawn graphite pencil drawing on white paper, '
-        'with fine pencil strokes, gentle shading and clean highlights. Preserve the subject and composition.'
+        'Turn this image into a detailed hand-drawn graphite pencil drawing on clean white paper. '
+        'Use fine natural pencil strokes, delicate cross-hatching, gentle tonal shading and clean highlights; '
+        'avoid ink outlines, charcoal blocks, colour and digital-painting texture. Preserve identity, anatomy, '
+        'pose, proportions and composition.'
     ),
     'sketch_to_photo': (
-        'Turn this pencil drawing into a realistic full-color photograph with natural colors, '
-        'realistic lighting and detailed textures. Preserve the subject and composition.'
+        'Turn this pencil drawing into a sharp realistic full-colour photograph with natural skin tones, '
+        'distinct believable object colours, realistic lighting and detailed photographic textures; avoid '
+        'monochrome, sepia, illustration, plastic skin and blur. Preserve identity, anatomy, pose, proportions '
+        'and composition.'
     ),
 }
 
@@ -70,8 +74,8 @@ def open_pipeline(adapter_dir=None, device=None, base_model=BASE_MODEL,
     return pipe
 
 
-def generate(pipe, image, direction, seed=42, steps=30, text_guidance=7.0,
-             image_guidance=1.5, size=512, description=''):
+def generate(pipe, image, direction, seed=42, steps=30, text_guidance=6.5,
+             image_guidance=2.2, size=512, description=''):
     import torch
     if direction not in PROMPTS:
         raise ValueError(f'Unknown direction: {direction}')
