@@ -10,20 +10,24 @@ def block(a, b):
 
 
 class PencilUNet(nn.Module):
-    def __init__(self, width=64):
+    def __init__(self, width=64, output_mode="residual"):
         super().__init__()
+        if output_mode not in {"residual", "direct"}:
+            raise ValueError(f"Unsupported output mode: {output_mode}")
+        self.output_mode = output_mode
         self.enc = nn.ModuleList([block(3, width), block(width, width*2),
                                  block(width*2, width*4), block(width*4, width*8)])
         self.mid = block(width*8, width*8)
         self.dec = nn.ModuleList([block(width*16, width*4), block(width*8, width*2),
                                  block(width*4, width), block(width*2, width)])
         self.out = nn.Conv2d(width, 3, 1)
-        # Begin as an exact identity mapping.  Paired translation then learns only the
-        # change required by the target instead of reconstructing the subject from
-        # random features.  This materially improves structure/identity preservation
-        # in short pilots and remains useful for both translation directions.
-        nn.init.zeros_(self.out.weight)
-        nn.init.zeros_(self.out.bias)
+        if output_mode == "residual":
+            # Identity initialization is useful when the input and output have similar
+            # appearance (photo -> pencil).  It is deliberately not used for the
+            # direct RGB reconstruction head because that otherwise biases a colour
+            # model toward the monochrome sketch input.
+            nn.init.zeros_(self.out.weight)
+            nn.init.zeros_(self.out.bias)
 
     def forward(self, x):
         source = x
@@ -34,4 +38,7 @@ class PencilUNet(nn.Module):
         for layer, skip in zip(self.dec, reversed(skips)):
             x = F.interpolate(x, size=skip.shape[-2:], mode='bilinear', align_corners=False)
             x = layer(torch.cat([x, skip], dim=1))
-        return (source + self.out(x)).clamp(-1, 1)
+        prediction = self.out(x)
+        if self.output_mode == "residual":
+            return (source + prediction).clamp(-1, 1)
+        return torch.tanh(prediction)

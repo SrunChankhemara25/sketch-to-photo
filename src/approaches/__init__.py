@@ -4,9 +4,9 @@ from .unet import PencilUNet
 from .gan import ResnetGenerator, PatchDiscriminator
 
 
-def make_generator(approach, width=64):
+def make_generator(approach, width=64, output_mode="residual"):
     if approach == 'unet':
-        return PencilUNet(width)
+        return PencilUNet(width, output_mode=output_mode)
     if approach == 'gan':
         return ResnetGenerator(width)
     raise ValueError(approach)
