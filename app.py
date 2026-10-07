@@ -11,7 +11,12 @@ import streamlit as st
 
 
 ROOT = Path(__file__).resolve().parent
-DEFAULT_BUNDLE = Path(os.getenv('SKETCH2PHOTO_BUNDLE', ROOT / 'checkpoints' / 'quality_study'))
+COMPARISON_BUNDLE = ROOT / 'checkpoints' / 'two_model_comparison'
+FALLBACK_BUNDLE = ROOT / 'checkpoints' / 'quality_study'
+DEFAULT_BUNDLE = Path(os.getenv(
+    'SKETCH2PHOTO_BUNDLE',
+    COMPARISON_BUNDLE if (COMPARISON_BUNDLE / 'manifest.json').is_file() else FALLBACK_BUNDLE,
+))
 if (ROOT / 'manifest.json').is_file():
     DEFAULT_BUNDLE = ROOT
 
@@ -145,6 +150,73 @@ def get_dual_editor(bundle: str):
     return DualEditor(bundle)
 
 
+@st.cache_resource(show_spinner=False)
+def get_comparison_editor(bundle: str):
+    from src.comparison_backend import ComparisonEditor
+    return ComparisonEditor(bundle)
+
+
+def render_comparison(st, bundle: Path, manifest: dict):
+    """Compare the two genuinely different pilot architectures side by side."""
+    editor = get_comparison_editor(str(bundle))
+    st.info(
+        'Loaded the fair pilot comparison: **Approach A — U-Net** and '
+        '**Approach B — residual generator trained with a conditional PatchGAN**. '
+        'Both outputs are raw model predictions.'
+    )
+    st.warning(
+        'These are experimental results, not production-quality claims. Known blur, '
+        'colour uncertainty, identity drift and general-scene failures must be reported.'
+    )
+    direction_label = st.segmented_control(
+        'Direction', ['Photo → Pencil', 'Pencil → Colour Photo'],
+        default='Photo → Pencil', key='comparison_direction',
+    )
+    direction = 'photo_to_pencil' if direction_label == 'Photo → Pencil' else 'sketch_to_photo'
+    uploaded = st.file_uploader(
+        'Upload source image', type=['png', 'jpg', 'jpeg', 'webp'], key='comparison_source'
+    )
+    if st.button('Compare U-Net and GAN', type='primary', use_container_width=True):
+        image = uploaded_image(uploaded)
+        if image is None:
+            st.error('Upload an image first.')
+        else:
+            try:
+                with st.spinner('Running both trained models…'):
+                    unet = editor.predict(image, direction, 'unet')
+                    gan = editor.predict(image, direction, 'gan')
+                st.session_state.comparison_result = (image, unet, gan, direction)
+            except Exception as error:
+                st.error(str(error))
+
+    result = st.session_state.get('comparison_result')
+    if result is not None:
+        source, unet, gan, generated_direction = result
+        columns = st.columns(3)
+        columns[0].image(source, caption='Input', use_container_width=True)
+        columns[1].image(unet, caption='Approach A — U-Net', use_container_width=True)
+        columns[2].image(gan, caption='Approach B — Residual GAN', use_container_width=True)
+        suffix = 'pencil' if generated_direction == 'photo_to_pencil' else 'photo'
+        first, second = st.columns(2)
+        first.download_button(
+            'Download U-Net output', png_bytes(unet), f'unet_{suffix}.png',
+            'image/png', use_container_width=True,
+        )
+        second.download_button(
+            'Download GAN output', png_bytes(gan), f'gan_{suffix}.png',
+            'image/png', use_container_width=True,
+        )
+
+    st.subheader('Saved pilot validation selection')
+    for approach, label in (('unet', 'U-Net'), ('gan', 'Residual GAN')):
+        info = manifest['models'][direction][approach]
+        st.write(
+            f"**{label}:** step {info['selected_step']}; "
+            f"validation LPIPS {info['validation_lpips']:.6f}"
+        )
+    st.caption('Lower LPIPS is better; visual inspection is still required.')
+
+
 def render_new(st, bundle: Path):
     """New three-approach study bundle or earlier two-adapter export."""
     import json
@@ -157,7 +229,10 @@ def render_new(st, bundle: Path):
         return
     manifest = json.loads(manifest_path.read_text())
     model_format = manifest.get('format')
-    if model_format == 'sketch2photo-study-v2':
+    if model_format == 'sketch2photo-two-model-comparison-v1':
+        render_comparison(st, bundle, manifest)
+        return
+    elif model_format == 'sketch2photo-study-v2':
         editor = get_study_editor(str(bundle))
         approaches = ['Validation best', 'U-Net', 'GAN', 'Diffusion']
     elif model_format == 'sketch2photo-ip2p-lora-v1':
@@ -225,7 +300,7 @@ def render():
     engine = st.sidebar.radio('Model source', choices, index=0 if new_available or not legacy_available else 1)
     st.sidebar.caption('The original weights are kept. Install a Colab export to enable the new trained models.')
     st.sidebar.divider()
-    st.sidebar.caption('PyTorch · Streamlit · 512px new workflow')
+    st.sidebar.caption('PyTorch · Streamlit · fair 512px comparison')
     if engine == 'New trained models':
         render_new(st, bundle)
     else:

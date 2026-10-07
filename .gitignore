@@ -5,6 +5,7 @@ __pycache__/
 checkpoints/*.pt
 checkpoints/dual_diffusion/
 checkpoints/quality_study/
+checkpoints/two_model_comparison/models/
 .DS_Store
 .ipynb_checkpoints/
 data/

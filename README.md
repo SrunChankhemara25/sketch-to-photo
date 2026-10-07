@@ -20,6 +20,12 @@ The sidebar uses the original models until an export is installed at
 Original checkpoints are not removed. Install `requirements-diffusion.txt` when
 running the portable new-model export by itself.
 
+The local project can also load the installed fair pilot bundle at
+`checkpoints/two_model_comparison/`. Its comparison view runs the trained U-Net and
+residual conditional-GAN generators side by side for both directions. Large checkpoint
+weights are kept out of ordinary Git; retain the Colab ZIP or publish them with Git LFS
+or an external download link.
+
 The sections below describe the **original application**, not the newly trained
 study models. Its pencil renderer is image processing, not a learned pencil model.
 
