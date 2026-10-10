@@ -1,12 +1,7 @@
 {
   "format": "sketch2photo-two-model-comparison-v1",
-  "created_utc": "2026-10-07T07:07:51.840984+00:00",
   "experiment": "identity_colour_gate_pilot_v2",
-  "purpose": "Fair comparison of two distinct trained architectures on the same pilot protocol.",
-  "architectures": {
-    "unet": "Skip-connected PencilUNet trained with paired reconstruction/perceptual losses.",
-    "gan": "Nine-block residual generator trained with a conditional PatchGAN discriminator."
-  },
+  "purpose": "Retained trained photo-to-pencil models from the fair pilot comparison.",
   "models": {
     "photo_to_pencil": {
       "unet": {
@@ -27,31 +22,10 @@
         "output_mode": "residual",
         "training": "pilot"
       }
-    },
-    "sketch_to_photo": {
-      "unet": {
-        "path": "models/sketch_to_photo/unet/best.pt",
-        "selected_step": 1024,
-        "validation_lpips": 0.4198474162258208,
-        "resolution": 512,
-        "width": 64,
-        "output_mode": "residual",
-        "training": "pilot"
-      },
-      "gan": {
-        "path": "models/sketch_to_photo/gan/best.pt",
-        "selected_step": 1024,
-        "validation_lpips": 0.5547766219824553,
-        "resolution": 512,
-        "width": 64,
-        "output_mode": "residual",
-        "training": "pilot"
-      }
     }
   },
   "validation_best": {
-    "photo_to_pencil": "unet",
-    "sketch_to_photo": "unet"
+    "photo_to_pencil": "unet"
   },
-  "quality_status": "Experimental comparison. Validation selection does not mean production quality; known failures and visual-gate rejections must be reported."
+  "quality_status": "Experimental trained photo-to-pencil models; lower validation LPIPS is better."
 }

@@ -1,12 +1,7 @@
-# Sketch2Photo two-model comparison
+# Photo-to-pencil trained models
 
-This bundle contains the completed fair pilot checkpoints for two distinct trained approaches in both directions: a skip-connected U-Net and a residual conditional GAN.
+This retained bundle contains the completed photo-to-pencil checkpoints from the
+fair pilot comparison: a skip-connected U-Net and a residual conditional GAN.
 
-Run locally with:
-
-```bash
-python -m pip install -r requirements.txt
-streamlit run app.py
-```
-
-The outputs are experimental and include documented failures. Do not describe them as production quality or claim that a monochrome sketch uniquely determines its source photo.
+The older sketch-to-photo weights were removed after the stronger dedicated v2
+portrait and general-scene experts were installed.

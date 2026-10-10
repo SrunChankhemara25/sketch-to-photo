@@ -4,6 +4,17 @@ Student: Srun Chankhemara (verify spelling for submission).
 
 ## New training experiment — use this notebook
 
+For the current **demo-oriented sketch → photo training**, use
+[sketch_to_photo_demo_pix2pix_experts_v2.ipynb](notebooks/sketch_to_photo_demo_pix2pix_experts_v2.ipynb).
+It trains two independent 256px pix2pix generators: a real-FS2K portrait expert and a
+persistent-COCO general-scene expert. V2 replaces transposed-convolution decoding with
+resize-and-convolution upsampling after the v1 visual gate exposed persistent grid
+artifacts. Each expert has its own conditional PatchGAN, Drive resume state, validation
+gates, and deployable checkpoint. The accepted photo → pencil checkpoint is not changed.
+Earlier notebooks remain as rejected experiment records rather than recommended models.
+
+The broader comparison study remains in the master notebook below.
+
 Use [sketch2photo_master_training.ipynb](notebooks/sketch2photo_master_training.ipynb)
 in Colab. It trains **both directions**, comparing a U-Net, conditional GAN and
 pretrained diffusion fine-tuning on identical splits. It includes LR/weight-decay
@@ -15,10 +26,11 @@ training has not run. Default data combines COCO synthetic pairs and FS2K real
 portrait drawings, with explicit dataset setup and limitations in the notebook.
 
 There is one Streamlit web launcher: `python app.py` (or `streamlit run app.py`).
-The sidebar uses the original models until an export is installed at
-`checkpoints/quality_study/`, then offers the validation-selected new models.
-Original checkpoints are not removed. Install `requirements-diffusion.txt` when
-running the portable new-model export by itself.
+The sidebar now detects the current v2 export at
+`checkpoints/demo_pix2pix_experts_v2/`. Choose a direction, then select either
+the retained photo-to-pencil U-Net/GAN or the new **General scene**/**Portrait**
+sketch-to-photo expert. The original tuned 128px U-Net appears in that same
+sketch-to-photo model list for direct comparison.
 
 The local project can also load the installed fair pilot bundle at
 `checkpoints/two_model_comparison/`. Its comparison view runs the trained U-Net and
@@ -147,8 +159,8 @@ Changing the architecture, input polarity, preprocessing, or resolution without 
 
 ## Improving the sketch-only AI model
 
-For the new experiment, use the **master notebook linked at the top of this README**.
-It is the only training notebook in this project.
+For the focused retraining, use the **sketch-to-photo notebook linked at the top of
+this README**. The master notebook remains the full two-direction comparison record.
 
 Step 2 has **Colour intensity** and **Reduce cream/yellow cast** controls for display/export
 post-processing. The default values are `1.5` and `0.35`. These amplify existing predicted
@@ -183,7 +195,11 @@ sketch2photo_test_ui/
 │   ├── study_backend.py     # new study-bundle inference
 │   └── approaches/          # new U-Net, residual GAN and diffusion training core
 ├── notebooks/
-│   └── sketch2photo_master_training.ipynb # only standalone Colab training notebook
+│   ├── sketch2photo_master_training.ipynb # full two-direction comparison notebook
+│   ├── sketch_to_photo_focused_retraining.ipynb # rejected frozen-refiner experiment
+│   ├── sketch_to_photo_end_to_end_retraining.ipynb # rejected v3 U-Net experiment
+│   ├── sketch_to_photo_demo_pix2pix_experts.ipynb # rejected grid-artifact v1
+│   └── sketch_to_photo_demo_pix2pix_experts_v2.ipynb # current demo training
 ├── docs/               # project structure and Colab training guide
 ├── checkpoints/        # trained .pt model files
 ├── results/            # exported metrics and sample results

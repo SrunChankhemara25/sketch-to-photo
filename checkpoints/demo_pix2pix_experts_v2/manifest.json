@@ -1,0 +1,22 @@
+{
+  "format": "sketch2photo-demo-pix2pix-experts-v2-resizeconv",
+  "direction": "sketch_to_photo",
+  "resolution": 256,
+  "experts": {
+    "portrait": "portrait_best.pt",
+    "general": "general_best.pt"
+  },
+  "validation": {
+    "portrait": {
+      "lpips": 0.43237471729516985,
+      "mae": 0.22560257241129875,
+      "score": 0.4887753603979945
+    },
+    "general": {
+      "lpips": 0.20399998985230922,
+      "mae": 0.05313637536019087,
+      "score": 0.21728408369235694
+    }
+  },
+  "note": "Two separately trained pix2pix generators; exact colours are not recoverable from monochrome input."
+}
