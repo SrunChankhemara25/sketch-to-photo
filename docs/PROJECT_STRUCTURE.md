@@ -1,52 +1,47 @@
-# Project structure
+# Project structure and ownership
+
+The runtime follows a small layered design. Dependencies point inward from the UI
+to inference services, then to architectures and shared image utilities.
 
 ```text
-sketch2photo_test_ui/
-├── app.py                  # deployable Streamlit web application
-├── src/
-│   ├── __init__.py
-│   ├── application.py      # original-model renderer/inference compatibility backend
-│   ├── diffusion_backend.py # inference for exported diffusion adapters
-│   ├── study_backend.py    # both directions, three-approach export inference
-│   ├── approaches/        # new U-Net, residual GAN and diffusion training core
-│   └── models.py           # Autoencoder, U-Net, ResNet encoder-decoder
-├── notebooks/
-│   └── sketch2photo_master_training.ipynb # ONLY training notebook; both tasks
-├── checkpoints/            # existing trained weights
-├── results/                # existing metrics, histories, figures, samples
-├── docs/
-│   ├── PROJECT_STRUCTURE.md
-│   ├── TRAINING_GUIDE.md
-│   └── DUAL_TRAINING.md
-├── requirements.txt
-├── requirements-diffusion.txt # pinned Python 3.11/3.12 new-model runtime
-├── README.md
-└── .gitignore
+app.py
+  └── src/ui/app.py
+        ├── src/inference/photo_to_pencil.py
+        ├── src/inference/sketch_to_photo.py
+        ├── src/image_processing.py
+        └── src/config.py
+              └── checkpoints/**/manifest.json
 ```
 
-Sketch2Photo separates application source code, Colab training notebooks,
-documentation, trained checkpoints, and evaluation results into dedicated folders.
+## Module responsibilities
 
-## Where to work
+- `app.py`: starts Streamlit and delegates rendering. It contains no model logic.
+- `src/ui/`: widgets, session state, user messages and downloads.
+- `src/inference/`: checkpoint loading, tensor conversion and prediction.
+- `src/architectures/`: layer-for-layer checkpoint-compatible PyTorch modules.
+- `src/image_processing.py`: EXIF/transparency handling, aspect-preserving canvas
+  fitting, bounded resizing and optional display enhancement.
+- `src/config.py`: stable project paths and application constants.
+- `checkpoints/`: deployed model weights, manifests and visual reports.
+- `notebooks/`: current reproducible training workflows.
+- `archive/`: superseded experiments that are intentionally excluded at runtime.
 
-- Run `python app.py` or `streamlit run app.py` from the project root. Use the sidebar
-  to choose original checkpoints or a new trained bundle. Without a new export, the
-  original model screen is selected automatically.
-- Edit `src/application.py` for interface, preprocessing, or drawing changes.
-- Keep the layers in `src/models.py` compatible with saved checkpoints.
-- Upload the standalone notebook to Colab for training; it does not import local source files.
-- The master embeds the approach/inference modules, so Colab needs only the notebook.
-  These source modules are actual architectures and shared runtime code, not local training jobs.
-- Download new best checkpoints into `checkpoints/` and keep their new results labeled separately.
+## Design rules
 
-Checkpoint paths are relative to this project, not the terminal's current directory.
-Folder organization does not change model quality or train a new model.
+1. Never import Streamlit from architecture or inference modules.
+2. Never put checkpoint-specific layer definitions in the UI.
+3. Treat manifests as the deployment contract; avoid hard-coded metrics in UI code.
+4. Keep preprocessing deterministic and shared between smoke tests and production.
+5. Preserve raw output mode (`Detail enhancement = 0`) for honest evaluation.
+6. Do not rename or reverse a checkpoint to represent another training direction.
 
-## GitHub submission
+## Adding a model
 
-Track source, notebook, documentation, and result figures. Do not normally commit
-the virtual environment, Python caches, local datasets, or large model weights.
-Existing weights total about 859 MB; provide a real external download link or use
-Git LFS if distributing them. No upload or repository has been created here.
-Before submission, include the actual checkpoint download link, dataset source,
-experiment settings, and honest limitations in the README.
+1. Add its architecture under `src/architectures/`.
+2. Add or extend a direction-specific inference service.
+3. Store the weight below its direction folder in `checkpoints/`.
+4. Add the model and validation metadata to the direction manifest.
+5. Extend `scripts/smoke_test.py` and run it before exposing the model in the UI.
+
+Use `scripts/verify_checkpoints.py` after downloading or moving weights to verify
+their file sizes and SHA-256 checksums against the manifests.

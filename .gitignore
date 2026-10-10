@@ -2,10 +2,6 @@
 .venv-diffusion/
 __pycache__/
 *.pyc
-checkpoints/*.pt
-checkpoints/dual_diffusion/
-checkpoints/quality_study/
-checkpoints/two_model_comparison/models/
 .DS_Store
 .ipynb_checkpoints/
 data/
@@ -13,3 +9,6 @@ outputs/
 logs/
 .env
 .env.*
+.pytest_cache/
+.ruff_cache/
+.coverage

@@ -1,0 +1,29 @@
+{
+  "format": "sketch2photo-photo-to-pencil-v1",
+  "direction": "photo_to_pencil",
+  "models": {
+    "unet": {
+      "label": "U-Net — recommended",
+      "path": "models/unet/best.pt",
+      "architecture": "PencilUNet",
+      "size_bytes": 53603397,
+      "sha256": "ae809c3502b0316df2d1c3bf54e10c977348e778b7c4f881af7eb52ef7df4815",
+      "selected_step": 1024,
+      "validation_lpips": 0.2599792869295925,
+      "resolution": 512,
+      "width": 64
+    },
+    "gan": {
+      "label": "Residual GAN",
+      "path": "models/gan/best.pt",
+      "architecture": "ResnetGenerator",
+      "size_bytes": 45582985,
+      "sha256": "fa6c20fe3f927e8a1bbd7b09b96c361f50074082b3139c0487a600a39be2cd60",
+      "selected_step": 1024,
+      "validation_lpips": 0.32037241756916046,
+      "resolution": 512,
+      "width": 64
+    }
+  },
+  "recommended": "unet"
+}

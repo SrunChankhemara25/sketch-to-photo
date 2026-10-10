@@ -1,0 +1,36 @@
+{
+  "format": "sketch2photo-sketch-to-photo-v1",
+  "direction": "sketch_to_photo",
+  "models": {
+    "general": {
+      "label": "General scene — recommended",
+      "path": "models/general/best.pt",
+      "architecture": "Pix2PixGenerator",
+      "size_bytes": 156708252,
+      "sha256": "20d2c3acc592e3c026e61355c3007c650eaad6d1d2895f9ab886236496d5c069",
+      "selected_step": 3000,
+      "resolution": 256,
+      "validation": {
+        "lpips": 0.20399998985230922,
+        "mae": 0.05313637536019087,
+        "score": 0.21728408369235694
+      }
+    },
+    "portrait": {
+      "label": "Portrait / face",
+      "path": "models/portrait/best.pt",
+      "architecture": "Pix2PixGenerator",
+      "size_bytes": 156708252,
+      "sha256": "07940bdfbb163311f4598df0eb6a3cce157ddaa8e70eb894435e55c1c98acfb8",
+      "selected_step": 3500,
+      "resolution": 256,
+      "validation": {
+        "lpips": 0.43237471729516985,
+        "mae": 0.22560257241129875,
+        "score": 0.4887753603979945
+      }
+    }
+  },
+  "recommended": "general",
+  "limitations": "Exact colours and identity cannot be recovered uniquely from a monochrome sketch."
+}

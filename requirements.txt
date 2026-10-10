@@ -1,6 +1,4 @@
 torch
-opencv-python
 numpy
 Pillow
-gradio>=4.44.0
 streamlit==1.65.0
